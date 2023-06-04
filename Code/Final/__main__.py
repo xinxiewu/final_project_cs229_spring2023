@@ -5,6 +5,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from util import *
 from supervised_learning import *
+from unsupervised_learning import *
+from deep_learning import *
 
 def main(fileurl):
     # Step 1: Data Preparation & EDA
