@@ -3,6 +3,7 @@ util.py contains custom functions:
     1. download_file: Download the .csv file from the given link and read as dataframe
     2. data_prep: Replace missing values with median/mean by category & then normalize
     3. data_split: Split dataset into training, validation and testing
+    4. point_eval_metric: Given confusion matrix, generate point evaluation metrics
 """
 import requests
 import pandas as pd
@@ -85,3 +86,40 @@ def data_split(df=None, label=None, validation=False, train_size=0.7, random_sta
         Y_val = torch.Tensor(y_val.values)
         Y_test = torch.Tensor(y_test.values)
         return X_train, X_val, X_test, Y_train, Y_val, Y_test
+
+# point_eval_metric()
+def point_eval_metric(conf_m=None, model=None):
+    """ Given confusion matrix, generate point evaluation metrics
+
+    Args:
+        conf_m: confusion matrix
+        model: str
+    
+    Returns:
+        DataFrame with info: 
+            - model, test_size, prevalence, acc_tot, acc_pos, acc_neg, prec, recall, f1
+    """
+    if model.lower() == 'lr':
+        model = 'LogisticReg'
+    elif model.lower() == 'nb':
+        model = 'NaiveBayes'
+    elif model.lower() == 'svm':
+        model = 'SVM'
+    elif model.lower() == 'rf':
+        model = 'Random Forest'
+    else:
+        model = model
+
+    tn, fp, fn, tp = conf_m[0][0], conf_m[0][1], conf_m[1][0], conf_m[1][1]
+    data =  {'Model': [model],
+             'Test Size': [tn + fn + fp + tp],
+             'Prevalence': [format((tp + fn) / (tn + fn + fp + tp), '.2%')],
+             'Total Accuracy': [format((tp + tn) / (tn + fn + fp + tp), '.2%')],
+             'Positive Accuracy': [format(tp / (tp + fn), '.2%')],
+             'Negative Accuracy': [format(tn / (tn + fp), '.2%')],
+             'Precision': [format(tp / (tp+fp), '.2%')],
+             'Recall': [format(tp / (tp+fn), '.2%')],
+             'F1-Score': [format(2*((tp / (tp+fp)) * (tp / (tp+fn))) / ((tp / (tp+fp)) + (tp / (tp+fn))), '.2%')]
+            }
+    
+    return pd.DataFrame.from_dict(data)
