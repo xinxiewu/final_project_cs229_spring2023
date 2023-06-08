@@ -1,0 +1,18 @@
+Title: Diabetes Mellitus Prediction Using Machine Learning Algorithms
+Team: Xinxie Wu, xineiwu@stanford.edu
+
+Predicting:
+
+Data:
+
+Features:
+
+Models:
+
+Results:
+
+Discussion:
+
+Future:
+
+References:
